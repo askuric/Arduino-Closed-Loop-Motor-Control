@@ -95,7 +95,7 @@ void setup() {
   motor.init();
 
   Serial.println("Motor ready.");
-  Serial.println("Input the new target velocity:");
+  Serial.println("Input the new target velocity [rad/s]:");
   delay(1000);
 
 }
@@ -158,7 +158,7 @@ void serialEvent() {
     // end of input
     if (inChar == '\n') {
       target_velocity = inputString.toFloat();
-      Serial.print("Tagret Velocity: ");
+      Serial.print("Tagret Velocity [rad/s]: ");
       Serial.println(target_velocity);
       inputString = "";
     }
