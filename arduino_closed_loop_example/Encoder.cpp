@@ -187,12 +187,12 @@ void Encoder::init(void (*doA)(), void(*doB)(), void(*doIndex)()){
   }
     // counter setup
   pulse_counter = 0;
-  pulse_timestamp = _micros();
+  pulse_timestamp = micros();
   // velocity calculation varibles
   prev_Th = 0;
   pulse_per_second = 0;
   prev_pulse_counter = 0;
-  prev_timestamp_us = _micros();
+  prev_timestamp_us = micros();
 
 
   // attach interrupt if functions provided
@@ -204,7 +204,6 @@ void Encoder::init(void (*doA)(), void(*doB)(), void(*doIndex)()){
       // A callback and B callback
       if(doA != nullptr) attachInterrupt(digitalPinToInterrupt(pinA), doA, CHANGE);
       if(doB != nullptr) attachInterrupt(digitalPinToInterrupt(pinB), doB, CHANGE);
-
       break;
     case Quadrature::DISABLE:
       // A callback and B callback
@@ -223,4 +222,5 @@ void Encoder::init(void (*doA)(), void(*doB)(), void(*doIndex)()){
       PCIFR  |= bit (digitalPinToPCICRbit(index_pin)); // clear any outstanding interrupt
       PCICR  |= bit (digitalPinToPCICRbit(index_pin)); // enable interrupt for the group
     }
+  }
 }
