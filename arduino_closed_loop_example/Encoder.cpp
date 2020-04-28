@@ -173,7 +173,7 @@ void Encoder::setIndexZero(){
 
 
 
-void Encoder::init(void (*doA)(), void(*doB)()){
+void Encoder::init(void (*doA)(), void(*doB)(), void(*doIndex)()){
   
   // Encoder - check if pullup needed for your encoder
   if(pullup == Pullup::INTERN){
@@ -187,12 +187,12 @@ void Encoder::init(void (*doA)(), void(*doB)()){
   }
     // counter setup
   pulse_counter = 0;
-  pulse_timestamp = micros();
+  pulse_timestamp = _micros();
   // velocity calculation varibles
   prev_Th = 0;
   pulse_per_second = 0;
   prev_pulse_counter = 0;
-  prev_timestamp_us = micros();
+  prev_timestamp_us = _micros();
 
 
   // attach interrupt if functions provided
@@ -202,27 +202,25 @@ void Encoder::init(void (*doA)(), void(*doB)()){
       // change it if the mode is quadrature
       cpr = 4*cpr;
       // A callback and B callback
-      if(doA != nullptr){
-        // CPR = 4xPPR
-        attachInterrupt(digitalPinToInterrupt(pinA), doA, CHANGE);
-        attachInterrupt(digitalPinToInterrupt(pinB), doB, CHANGE);
-      }
+      if(doA != nullptr) attachInterrupt(digitalPinToInterrupt(pinA), doA, CHANGE);
+      if(doB != nullptr) attachInterrupt(digitalPinToInterrupt(pinB), doB, CHANGE);
+
       break;
     case Quadrature::DISABLE:
       // A callback and B callback
-      if(doA != nullptr){
-        // CPR = PPR
-        attachInterrupt(digitalPinToInterrupt(pinA), doA, RISING);
-        attachInterrupt(digitalPinToInterrupt(pinB), doB, RISING);
-      }
+      if(doA != nullptr) attachInterrupt(digitalPinToInterrupt(pinA), doA, RISING);
+      if(doB != nullptr) attachInterrupt(digitalPinToInterrupt(pinB), doB, RISING);
       break;
   }
         
   // if index used intialise the index interrupt
-  if(hasIndex() && doA != nullptr) {
-    *digitalPinToPCMSK(index_pin) |= bit (digitalPinToPCMSKbit(index_pin));  // enable pin
-    PCIFR  |= bit (digitalPinToPCICRbit(index_pin)); // clear any outstanding interrupt
-    PCICR  |= bit (digitalPinToPCICRbit(index_pin)); // enable interrupt for the group
-  }
+  if(hasIndex()){
+    // hardware interrupt
+    if( doIndex != nullptr){
+       attachInterrupt(digitalPinToInterrupt(index_pin), doIndex, CHANGE);
+    }else{ // software interrupt
+      *digitalPinToPCMSK(index_pin) |= bit (digitalPinToPCMSKbit(index_pin));  // enable pin
+      PCIFR  |= bit (digitalPinToPCICRbit(index_pin)); // clear any outstanding interrupt
+      PCICR  |= bit (digitalPinToPCICRbit(index_pin)); // enable interrupt for the group
+    }
 }
-

@@ -14,18 +14,22 @@ DCMotor motor = DCMotor(5, 6, 7);
 //  - encA, encB    - encoder A and B pins
 //  - ppr           - impulses per rotation  (cpr=ppr*4)
 //  - index pin     - (optional input) 
-Encoder encoder = Encoder(arduinoInt1, arduinoInt2, 8192, A0);
+Encoder encoder = Encoder(arduinoInt1, arduinoInt2, 128, 21);
 
 // Interrupt rutine intialisation
 // channel A and B callbacks
 void doA(){encoder.handleA();}
 void doB(){encoder.handleB();}
 // index calback interrupt code 
+// either provide it to the encoder.init()
+// or in the ISR function
+void doIndex(){encoder.handleIndex();}
+
 // please set the right PCINT(0,1,2)_vect parameter
 //  PCINT0_vect - index pin in between D8 and D13
 //  PCINT1_vect - index pin in between A0 and A5 (recommended)
 //  PCINT2_vect - index pin in between D0 and D7
-ISR (PCINT1_vect) { encoder.handleIndex(); }
+// ISR (PCINT1_vect) {  doIndex(); }
 
 
 void setup() { 
@@ -43,7 +47,8 @@ void setup() {
   encoder.pullup = Pullup::EXTERN;
   
   // initialise encoder hardware
-  encoder.init(doA, doB);
+  encoder.init(doA, doB, doIndex);
+  //encoder.init(doA, doB);
 
   // power supply voltage
   // default 12V
