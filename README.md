@@ -6,6 +6,4 @@
 Documentation comming soon.
 
 # Contact
-Please do not hesitate to leave an issue or contact me direclty by email.
-I will be very happy to hear your experiences.
-antun.skuric@outlook.com
+Please do not hesitate to leave an issue.
